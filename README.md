@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/stanford-edgar-parser.svg)](https://pypi.org/project/stanford-edgar-parser/)
 [![Python](https://img.shields.io/pypi/pyversions/stanford-edgar-parser.svg)](https://pypi.org/project/stanford-edgar-parser/)
-[![Publish](https://github.com/Stanford-Advanced-FinTech-Lab-SAFTL/stanford-edgar-filings-dataset/actions/workflows/publish.yml/badge.svg)](https://github.com/Stanford-Advanced-FinTech-Lab-SAFTL/stanford-edgar-filings-dataset/actions/workflows/publish.yml)
+[![Publish](https://github.com/Stanford-Advanced-FinTech-Lab-SAFTL/stanford-edgar-filings-dataset/actions/workflows/publish.yml/badge.svg?event=push)](https://github.com/Stanford-Advanced-FinTech-Lab-SAFTL/stanford-edgar-filings-dataset/actions/workflows/publish.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![arXiv](https://img.shields.io/badge/arXiv-2606.18192-b31b1b.svg)](https://arxiv.org/abs/2606.18192)
 [![Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-SEFD--v1-yellow.svg)](https://huggingface.co/datasets/anonymous-md/EDGAR_FILINGS_DATASET)
