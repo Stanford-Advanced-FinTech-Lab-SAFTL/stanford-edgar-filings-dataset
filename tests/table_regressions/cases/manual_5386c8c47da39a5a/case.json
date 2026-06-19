@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_5386c8c47da39a5a",
+  "label": "Year ended December 31, 2012",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

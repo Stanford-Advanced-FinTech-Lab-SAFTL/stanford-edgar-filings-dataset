@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_998369e04c630997",
+  "label": "Asset\nType",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

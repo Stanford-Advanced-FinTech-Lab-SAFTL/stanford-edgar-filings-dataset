@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_d7ea8ede441ea1bf",
+  "label": "Three Months Ended",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_0fca378460e5970a",
+  "label": "Use of Proceeds Table",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

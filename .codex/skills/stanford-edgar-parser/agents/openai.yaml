@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stanford EDGAR Parser"
+  short_description: "Parse SEC filings into SEFD MultiMarkdown"
+  default_prompt: "Use $stanford-edgar-parser to parse an SEC filing into layout-faithful MultiMarkdown and review the output."

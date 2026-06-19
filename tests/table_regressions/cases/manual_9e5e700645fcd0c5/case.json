@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_9e5e700645fcd0c5",
+  "label": "Maturities (1)",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_aa6e6a918d2fb165",
+  "label": "Fiscal Year 2024",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

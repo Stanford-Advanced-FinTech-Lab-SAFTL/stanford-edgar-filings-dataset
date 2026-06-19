@@ -1,0 +1,2 @@
+include stanford_edgar_parser/README.md
+recursive-include stanford_edgar_parser/agent_assets *

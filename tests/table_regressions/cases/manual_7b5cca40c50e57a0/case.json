@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_7b5cca40c50e57a0",
+  "label": "2023 (Shares in thousands)",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

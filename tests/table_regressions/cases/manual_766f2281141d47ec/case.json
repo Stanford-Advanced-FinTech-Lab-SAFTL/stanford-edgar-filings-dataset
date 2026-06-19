@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_766f2281141d47ec",
+  "label": "Series Membership Interests Overview\n\nActive Offerings (Previously Qualified)",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

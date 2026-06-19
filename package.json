@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "github-markdown-css": "^5.8.1",
+    "markdown-it": "^14.1.0",
+    "markdown-it-multimd-table": "^4.2.3",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0",
+    "puppeteer": "^24.40.0"
+  }
+}

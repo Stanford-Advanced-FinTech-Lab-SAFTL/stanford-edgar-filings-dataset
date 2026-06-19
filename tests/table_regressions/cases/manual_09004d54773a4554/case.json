@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_09004d54773a4554",
+  "label": "Without\nOver- Allotment Option",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

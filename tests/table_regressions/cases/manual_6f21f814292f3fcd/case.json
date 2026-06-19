@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_6f21f814292f3fcd",
+  "label": "Loans Receivable Held for Investment, Collateral Dependent Loans by Collateral Type (Details)\n$ in Thousands",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

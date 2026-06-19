@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_261381304c316c81",
+  "label": "Name,\nAddress(1) and\n\nYear of Birth",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

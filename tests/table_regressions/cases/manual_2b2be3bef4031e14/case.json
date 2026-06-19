@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_2b2be3bef4031e14",
+  "label": "Name of Beneficial Owner",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

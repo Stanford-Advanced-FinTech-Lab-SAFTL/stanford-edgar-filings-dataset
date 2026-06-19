@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_e2ead15a9ba34ee7",
+  "label": "Years ended",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

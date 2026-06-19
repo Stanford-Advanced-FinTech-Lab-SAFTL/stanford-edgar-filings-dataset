@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_15d6003a203c98f0",
+  "label": "Three Months Ended March 31,",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

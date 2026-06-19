@@ -1,0 +1,15 @@
+beautifulsoup4
+imgkit
+lxml
+mistralai>=1.9.0,<2.0.0
+numpy
+pandas
+playwright
+pydantic
+PyMuPDF
+PyPDF2
+python-dotenv
+requests
+tabulate
+tiktoken
+transformers

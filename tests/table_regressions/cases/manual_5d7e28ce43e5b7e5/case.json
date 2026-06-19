@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_5d7e28ce43e5b7e5",
+  "label": "Exhibit No.",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

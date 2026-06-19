@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stanford-edgar-parser"
+version = "0.1.2"
+description = "Layout-faithful SEC EDGAR filing parser from the Stanford EDGAR Filings Dataset."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Stanford Advanced Financial Technologies Lab" }
+]
+keywords = ["sec", "edgar", "filings", "multimarkdown", "financial-documents"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: OS Independent",
+  "Topic :: Text Processing :: Markup",
+]
+dependencies = [
+  "beautifulsoup4>=4.12.3",
+  "imgkit>=1.2.3",
+  "lxml>=6.0.0",
+  "mistralai>=1.9.0,<2.0.0",
+  "numpy>=2.0.0",
+  "pandas>=2.0.0",
+  "playwright>=1.48.0",
+  "pydantic>=2.0.0",
+  "PyMuPDF>=1.24.0",
+  "PyPDF2>=3.0.1",
+  "python-dotenv>=1.0.0",
+  "requests>=2.32.0",
+  "tabulate>=0.9.0",
+]
+
+[project.optional-dependencies]
+ai = []
+dev = [
+  "build>=1.2.0",
+  "pytest>=8.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Stanford-Advanced-FinTech-Lab-SAFTL/stanford-edgar-filings-dataset"
+Repository = "https://github.com/Stanford-Advanced-FinTech-Lab-SAFTL/stanford-edgar-filings-dataset"
+
+[project.scripts]
+stanford-edgar-parser = "stanford_edgar_parser.__main__:main"
+stanford-edgar-mcp = "stanford_edgar_parser.mcp_server:main"
+stanford-edgar-install-skill = "stanford_edgar_parser.ai:main"
+
+[tool.setuptools.packages.find]
+include = ["stanford_edgar_parser*"]
+
+[tool.setuptools.package-data]
+stanford_edgar_parser = ["agent_assets/**/*", "README.md"]

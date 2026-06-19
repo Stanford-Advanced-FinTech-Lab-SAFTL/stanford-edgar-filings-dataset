@@ -1,0 +1,41 @@
+"""Backward-compatible re-export module for the parser API."""
+
+from .api import (
+    clean_financial_df,
+    convert_all_tables_to_mmd,
+    df_to_markdown,
+    df_to_multimarkdown,
+    estimate_parser_tokens,
+    get_mistral_key_status_snapshot,
+    main_one,
+    normalize_form_type_for_stats,
+    normalize_text_markup,
+    parse_any_xml,
+    parse_html_filing,
+    parse_html_via_ocr,
+    parse_html_via_pdf_render,
+    parse_pdf_attachments,
+    parse_plaintext_filing,
+    process_local_xbrl,
+    reset_mistral_key_status,
+)
+
+__all__ = [
+    "clean_financial_df",
+    "convert_all_tables_to_mmd",
+    "df_to_markdown",
+    "df_to_multimarkdown",
+    "estimate_parser_tokens",
+    "get_mistral_key_status_snapshot",
+    "main_one",
+    "normalize_form_type_for_stats",
+    "normalize_text_markup",
+    "parse_any_xml",
+    "parse_html_filing",
+    "parse_html_via_ocr",
+    "parse_html_via_pdf_render",
+    "parse_pdf_attachments",
+    "parse_plaintext_filing",
+    "process_local_xbrl",
+    "reset_mistral_key_status",
+]

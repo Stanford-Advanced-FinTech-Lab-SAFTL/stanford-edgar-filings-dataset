@@ -1,0 +1,77 @@
+# Secrets and local configuration
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.pyre/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+.venv311/
+venv/
+env/
+ENV/
+
+# Build and packaging artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
+
+# Test and coverage outputs
+.coverage
+.coverage.*
+htmlcov/
+
+# Logs
+*.log
+
+# Generated benchmark outputs
+/ocr_bench_out/
+sec_cpt_*/
+sec_cpt_shards/
+checkpoints/
+outputs/
+*.jsonl
+*.jsonl.gz
+*.jsonl.zst
+*.parquet
+*.safetensors
+sec_parser/.firered_model/
+sec_parser/ocr_bench_out/
+sec_parser/ocr_bench_out_codex_enterprise_full/
+sec_parser/edgar_bench_runs/
+sec_parser/edgar_browser_live_hard_qa_run/
+sec_parser/edgar_browser_live_hard_qa_run_v2/
+sec_parser/table_regression_candidates/
+sec_parser/table_regression_candidates_v2/
+sec_parser/table_regression_candidates_v3/
+sec_parser/table_regression_candidates_v4/
+sec_parser/table_regression_candidates_v5/
+sec_parser/table_regressions/
+sec_parser/table_regressions_v5/
+tmp_dom_scout_probe/
+tmp_filing_scout_probe/
+
+# JavaScript dependencies
+node_modules/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

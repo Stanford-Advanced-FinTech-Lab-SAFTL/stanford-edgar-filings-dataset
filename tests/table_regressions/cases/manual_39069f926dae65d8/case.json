@@ -1,0 +1,9 @@
+{
+  "case_id": "manual_39069f926dae65d8",
+  "label": "Counterparty Pays:",
+  "to_mmd": true,
+  "source_document_url": "",
+  "enabled": true,
+  "required_substrings": [],
+  "forbidden_substrings": []
+}

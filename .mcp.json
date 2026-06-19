@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "stanford-edgar-parser": {
+      "command": "python",
+      "args": [
+        "-m",
+        "stanford_edgar_parser.mcp_server"
+      ],
+      "cwd": "."
+    }
+  }
+}
