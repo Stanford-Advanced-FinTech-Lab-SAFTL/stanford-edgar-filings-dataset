@@ -3,7 +3,7 @@
 from . import _state
 from . import api as _sec_parser
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 clean_financial_df = _sec_parser.clean_financial_df
 convert_all_tables_to_mmd = _sec_parser.convert_all_tables_to_mmd
