@@ -15,6 +15,10 @@ from stanford_edgar_parser.parsers.xml.fund_and_ownership import (
     parse_schedule13g_xml,
 )
 from stanford_edgar_parser.parsers.xml.ownership import parse_form4_xml
+from stanford_edgar_parser.parsers.xml.preservation import (
+    append_unrendered_xml_fields,
+    preserve_xml_fields,
+)
 from stanford_edgar_parser.utils.bootstrap import (
     BeautifulSoup,
     datetime,
@@ -30,6 +34,7 @@ def to_compact_markdown(df: pd.DataFrame, **kwargs) -> str:
     return _impl(df, **kwargs)
 
 
+@preserve_xml_fields
 def parse_abs_ee_xml(xml: BeautifulSoup) -> str:
     """
     Parses the XML of a Form ABS-EE data file (EX-102) into a structured Markdown table.
@@ -76,6 +81,7 @@ def parse_abs_ee_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_abs_ee_comments_xml(xml: BeautifulSoup) -> str:
     """
     Parses the XML of an ABS-EE Asset Related Document (EX-103) into Markdown.
@@ -109,6 +115,7 @@ def parse_abs_ee_comments_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_schedule13d_xml(xml: BeautifulSoup) -> str:
     """
     Parses a Schedule 13D or 13D/A filing into structured Markdown,
@@ -270,6 +277,29 @@ def parse_schedule13d_xml(xml: BeautifulSoup) -> str:
 
             if (comment := get_text(item1, 'commentText')) and comment != "—":
                 parts.append(f"\n{comment}")
+
+        item2 = items.find('item2')
+        if item2:
+            parts.append("\n**Item 2. Identity and Background**")
+            item2_fields = (
+                ("filingPersonName", "(a) Name"),
+                ("principalBusinessAddress", "(b) Principal business address"),
+                ("principalJob", "(c) Principal occupation or employment"),
+                ("hasBeenConvicted", "(d/e) Criminal or civil proceedings"),
+                ("convictionDescription", "Proceeding details"),
+                ("citizenship", "(f) Citizenship or place of organization"),
+            )
+            for tag, label in item2_fields:
+                value = get_text(item2, tag)
+                if value != "—":
+                    parts.append(f"**{label}:**\n{value}")
+
+        item3 = items.find('item3')
+        if item3 and (funds_source := get_text(item3, 'fundsSource')) != "—":
+            parts.append(
+                "\n**Item 3. Source and Amount of Funds or Other Consideration**"
+                f"\n\n{funds_source}"
+            )
         
         item4 = items.find('item4')
         if item4 and (purpose := get_text(item4, 'transactionPurpose')) and purpose != "—":
@@ -292,6 +322,13 @@ def parse_schedule13d_xml(xml: BeautifulSoup) -> str:
         if item6 and (contracts := get_text(item6, 'contractDescription')) and contracts != "—":
             parts.append(f"\n**Item 6. Contracts, Arrangements, Understandings or Relationships With Respect to Securities of the Issuer.**\n\n{contracts}")
 
+        item7 = items.find('item7')
+        if item7 and (exhibits := get_text(item7, 'filedExhibits')) != "—":
+            parts.append(
+                "\n**Item 7. Material to Be Filed as Exhibits**"
+                f"\n\n{exhibits}"
+            )
+
     parts.append("\n### SIGNATURE\n")
     sig_info = form_data.find('signatureInfo')
     if sig_info:
@@ -305,6 +342,7 @@ def parse_schedule13d_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form1k_xml(xml: BeautifulSoup) -> str:
     """
     Parses the XML of a Form 1-K filing into a structured Markdown document.
@@ -383,6 +421,7 @@ def parse_form1k_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form1z_xml(xml: BeautifulSoup) -> str:
     """
     Parses the XML of a Form 1-Z (Exit Report) into a structured Markdown document.
@@ -459,6 +498,7 @@ def parse_form1z_xml(xml: BeautifulSoup) -> str:
     
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_ta1_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form TA-1 or TA-1/A into a structured Markdown document,
@@ -665,6 +705,7 @@ def parse_form_ta1_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_mai_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form MA-I or MA-I/A into a structured Markdown document,
@@ -949,6 +990,7 @@ def parse_form_mai_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
     
+@preserve_xml_fields
 def parse_form_x17a5_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form X-17A-5 (FOCUS Report) into a structured Markdown document.
@@ -1053,6 +1095,7 @@ def parse_form_x17a5_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_cfportal_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form CFPORTAL or CFPORTAL/A into a structured Markdown document.
@@ -1313,6 +1356,7 @@ def parse_form_cfportal_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_ta2_xml(xml: BeautifulSoup) -> str:
     """
     Parses a comprehensive XML-based Form TA-2 into a structured Markdown document,
@@ -1534,6 +1578,7 @@ def parse_form_ta2_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_taw_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form TA-W (Notice of Withdrawal) into a structured Markdown document.
@@ -1616,6 +1661,7 @@ def parse_form_taw_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_24f2nt_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form 24F-2NT into a structured Markdown document.
@@ -1662,9 +1708,26 @@ def parse_form_24f2nt_xml(xml: BeautifulSoup) -> str:
             parts.append(f"- **Address:** {get_text(issuer_addr, 'street1')}, {get_text(issuer_addr, 'city')}, {get_text(issuer_addr, 'state')} {get_text(issuer_addr, 'zipCode')}")
 
         item2 = filing_info.find('item2')
-        all_series_flag = get_text(item2.find('reportClassName'), 'rptIncludeAllFlag').lower() == 'true'
         parts.append(f"\n**2. The Name and EDGAR Identifier of each series or class of securities for which this Form is filed:**")
-        parts.append(f"- [{'x' if all_series_flag else ' '}] Check box if the Form is being filed for all series and classes of the issuer.")
+        series_class_rows = []
+        if item2:
+            for record in item2.find_all('rptSeriesClassInfo'):
+                include_all = get_text(record, 'includeAllClassesFlag').lower() == 'true'
+                series_class_rows.append({
+                    "Series Name": get_text(record, 'seriesName'),
+                    "Series ID": get_text(record, 'seriesId'),
+                    "Includes All Classes": "Yes" if include_all else "No",
+                })
+        if series_class_rows:
+            parts.append(to_compact_markdown(pd.DataFrame(series_class_rows), index=False))
+        else:
+            report_class = item2.find('reportClassName') if item2 else None
+            all_series_flag = (
+                get_text(report_class, 'rptIncludeAllFlag').lower() == 'true'
+                if report_class
+                else False
+            )
+            parts.append(f"- [{'x' if all_series_flag else ' '}] Check box if the Form is being filed for all series and classes of the issuer.")
 
         item3 = filing_info.find('item3')
         parts.append(f"\n**3. Investment Company Act File Number:** {get_text(item3, 'investmentCompActFileNo')}")
@@ -1694,10 +1757,10 @@ def parse_form_24f2nt_xml(xml: BeautifulSoup) -> str:
             ("(vi) Redemption credits available for use in future years:", format_dollar(get_text(item5, 'redemptionCreditsAvailableForUseInFutureYears'))),
             ("(vii) Multiplier for determining registration fee:", get_text(item5, 'multiplierForDeterminingRegistrationFee')),
             ("(viii) Registration fee due:", format_dollar(get_text(item5, 'registrationFeeDue'))),
-            ("6(i). Amount of securities deducted:", format_dollar(get_text(item6, 'amountOfSecuritiesDeducted'))),
-            ("6(ii). Number of shares or other units remaining unsold:", get_text(item6, 'numberOfSharesOrOtherUnitsRemainingUnsold')),
-            ("7. Interest due -- if this Form is being filed more than 90 days after the end of the issuer's fiscal year:", format_dollar(get_text(item7, 'interestDue'))),
-            ("8. Total of the amount of the registration fee due plus any interest due:", format_dollar(get_text(item8, 'totalOfRegistrationFeePlusAnyInterestDue'))),
+            ("6(i). Amount of securities deducted:", format_dollar(get_text(filing_info, 'amountOfSecuritiesDeducted'))),
+            ("6(ii). Number of shares or other units remaining unsold:", get_text(filing_info, 'numberOfSharesOrOtherUnitsRemainingUnsold')),
+            ("7. Interest due -- if this Form is being filed more than 90 days after the end of the issuer's fiscal year:", format_dollar(get_text(filing_info, 'interestDue'))),
+            ("8. Total of the amount of the registration fee due plus any interest due:", format_dollar(get_text(filing_info, 'totalOfRegistrationFeePlusAnyInterestDue'))),
         ]
         
         for label, value in calc_data:
@@ -1717,6 +1780,7 @@ def parse_form_24f2nt_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_maw_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form MA-W (Notice of Withdrawal) into a structured Markdown document
@@ -1829,6 +1893,7 @@ def parse_form_maw_xml(xml: BeautifulSoup) -> str:
             
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_ma_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form MA or MA/A (for municipal advisory firms) into a
@@ -2222,6 +2287,7 @@ def parse_form_ma_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_legacy_n_mfp_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
     """
     Parses an XML-based legacy Form N-MFP (pre-2016 schema) into a
@@ -2522,6 +2588,7 @@ def parse_legacy_n_mfp_xml(xml: BeautifulSoup, class_name_map: dict = None) -> s
             
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_sbse_a_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form SBSE-A or SBSE-A/A into a structured Markdown document.
@@ -2684,6 +2751,7 @@ def parse_sbse_a_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_atsn_xml(xml: BeautifulSoup) -> str:
     """
     Parses any XML-based Form ATS-N filing (including /MA, /UA, /OFA, /CA, etc.)
@@ -2750,6 +2818,46 @@ def parse_form_atsn_xml(xml: BeautifulSoup) -> str:
         parts.append(f"\n**Statement About Amendment:**\n{get_text(cover, 'taStatementAboutAmendment')}")
 
     p1 = form_data.find('partOne')
+    if not p1:
+        if submission_type == "ATS-N-W":
+            parts = ["## Form ATS-N-W: Notice of Withdrawal"]
+        elif submission_type == "ATS-N-C":
+            parts = ["## Form ATS-N-C: Notice of Cessation of Operations"]
+        else:
+            parts = [f"## Form {submission_type}: NMS Stock Alternative Trading System Report"]
+
+        parts.extend([
+            "\n### Filing Information",
+            f"**NMS Stock ATS Name:** {get_text(xml, 'NMSStockATSName')}",
+            f"**MPID:** {get_text(xml, 'MPID')}",
+            (
+                "**Operates Pursuant to Form ATS:** "
+                f"{format_bool(get_text(xml, 'rbOperatesPursuantToFormATS'))}"
+            ),
+        ])
+        cease_date = get_text(xml, 'dateCeaseToOperate')
+        if cease_date != "—":
+            parts.append(f"**Date Operations Ceased:** {cease_date}")
+
+        part_four = form_data.find('partFour')
+        if part_four:
+            parts.extend([
+                "\n### Contact and Execution",
+                (
+                    "**Contact:** "
+                    f"{get_text(part_four, 'txPart4ContactFirstName')} "
+                    f"{get_text(part_four, 'txPart4ContactLastName')}"
+                ),
+                f"**Title:** {get_text(part_four, 'txPart4ContactTitle')}",
+                f"**Email:** {get_text(part_four, 'txPart4ContactEmail')}",
+                f"**Telephone:** {get_text(part_four, 'txPart4ContactTelephone')}",
+                f"**Primary Address:** {format_address(part_four.find('part4PrimaryAddr'))}",
+                f"**As of Date:** {get_text(part_four, 'txAsOfDate')}",
+                f"**Signature:** {get_text(part_four, 'txSignatureName')}",
+                f"**Signature Title:** {get_text(part_four, 'txSignatureTitle')}",
+            ])
+        return "\n\n".join(parts)
+
     parts.append("\n### Part I: Basic Information")
     p1_details = {
         "1. Is the ATS operated by a registered broker-dealer?": format_bool(get_text(p1, 'rbPart1Item1IsBd')),
@@ -2995,6 +3103,7 @@ def parse_form_atsn_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_n_mfp3_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
     """
     Parses an XML-based Form N-MFP3 (Monthly Schedule of Portfolio Holdings
@@ -3130,7 +3239,7 @@ def parse_form_n_mfp3_xml(xml: BeautifulSoup, class_name_map: dict = None) -> st
         for node in class_level_nodes:
             class_id = get_text(node, 'classesId')
             class_name = get_text(node, 'classFullName') or class_name_map.get(class_id, f"Unknown Class ({class_id})")
-            parts.append(f"\n### Class: {class_name}")
+            parts.append(f"\n### Class: {class_name} ({class_id})")
             
             class_details = {
                 "Minimum Initial Investment": format_val(get_text(node, 'minInitialInvestment'), 'dollar'),
@@ -3244,6 +3353,10 @@ def parse_form_n_mfp3_xml(xml: BeautifulSoup, class_name_map: dict = None) -> st
                         
                         collateral_data.append({
                             "Issuer Name": get_text(issuer, 'nameOfCollateralIssuer'),
+                            "CUSIP": get_text(issuer, 'CUSIPMember'),
+                            "ISIN": get_text(issuer, 'ISINId'),
+                            "LEI": get_text(issuer, 'LEIID'),
+                            "Other ID": get_text(issuer, 'otherUniqueId'),
                             "Maturity Date": get_text(issuer.find('maturityDate'), 'date'),
                             "Coupon": coupon_formatted,
                             "Yield": yield_formatted,
@@ -3264,6 +3377,7 @@ def parse_form_n_mfp3_xml(xml: BeautifulSoup, class_name_map: dict = None) -> st
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_sbsef_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form SBSEF or SBSEF/A into a structured Markdown document.
@@ -3347,8 +3461,6 @@ def parse_any_xml(xml_contents, pdf_docs=None, class_name_map=None) -> str:
         if not xml_content.strip():
             continue
 
-        xml_content = re.sub(r'\n(?=[a-z</])', '', xml_content)
-
         xml_content = re.sub(r'&(?![a-zA-Z0-9#]{2,};)', '&amp;', xml_content)
 
         soup = BeautifulSoup(xml_content, "lxml-xml")
@@ -3375,6 +3487,8 @@ def parse_any_xml(xml_contents, pdf_docs=None, class_name_map=None) -> str:
                 parsed_part = parse_sbse_a_xml(soup)
             elif form_type.startswith("X-17A-5"):
                 parsed_part = parse_form_x17a5_xml(soup)
+            elif form_type.startswith("25"):
+                parsed_part = parse_form25_xml(soup)
             elif form_type.startswith("24F-2NT"):
                 parsed_part = parse_form_24f2nt_xml(soup)
             elif form_type.startswith("CFPORTAL"):
@@ -3411,7 +3525,7 @@ def parse_any_xml(xml_contents, pdf_docs=None, class_name_map=None) -> str:
                 parsed_part = parse_form13f_hr_xml(xml_contents)
                 if parsed_part: all_parts.append(parsed_part)
                 break
-            elif form_type == "N-PX":
+            elif form_type.startswith("N-PX"):
                 parsed_part = parse_form_npx_xml(xml_contents)
                 if parsed_part: all_parts.append(parsed_part)
                 break
@@ -3427,7 +3541,7 @@ def parse_any_xml(xml_contents, pdf_docs=None, class_name_map=None) -> str:
                     full_soup = BeautifulSoup(xml_content, "lxml-xml")
                     parsed_part = parse_legacy_n_mfp_xml(full_soup, class_name_map=class_name_map)
                     
-            elif form_type.startswith("NPORT-P"):
+            elif form_type.startswith(("NPORT-P", "NPORT-NP")):
                 parsed_part = parse_nport_p_xml(soup)
             elif form_type.startswith("144"):
                 parsed_part = parse_form144_xml(soup, form_type)
@@ -3448,8 +3562,12 @@ def parse_any_xml(xml_contents, pdf_docs=None, class_name_map=None) -> str:
         if parsed_part:
             all_parts.append(parsed_part)
     
-    return "\n\n".join(all_parts)
+    output = "\n\n".join(all_parts)
+    if output:
+        return append_unrendered_xml_fields(output, xml_contents)
+    return output
 
+@preserve_xml_fields
 def parse_effect_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Notice of Effectiveness (EFFECT) or Qualification (QUALIF)
@@ -3514,6 +3632,7 @@ def parse_effect_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form13f_hr_xml(xml_contents: list) -> str:
     """
     Parses a 13F-HR, 13F-NT, or 13F-HR/A filing from its XML components into a
@@ -3719,6 +3838,7 @@ def parse_form13f_hr_xml(xml_contents: list) -> str:
     
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_npx_xml(xml_contents) -> str:
     """
     Parses a two-part Form N-PX filing into a single, comprehensive Markdown document.
@@ -3832,25 +3952,40 @@ def parse_form_npx_xml(xml_contents) -> str:
             vote_records = []
             for item in proxy_vote_table.find_all(re.compile(r'^proxyTable$', re.I)):
                 vote_node = item.find(re.compile(r'^vote$', re.I))
-                how_voted, sv_ford, mgmt_rec = "—", "—", "—"
-                if vote_node and (record := vote_node.find(re.compile(r'^voteRecord$', re.I))):
-                    how_voted = get_text(record, 'howVoted')
-                    sv_ford = get_text(record, 'sharesVoted')
-                    mgmt_rec = get_text(record, 'managementRecommendation')
                 category_text = "; ".join(c.text for c in item.select('categoryType'))
-                vote_records.append({
-                    'NAME OF ISSUER': get_text(item, 'issuerName'),
-                    'CUSIP': get_text(item, 'cusip'),
-                    'MEETING DATE': get_text(item, 'meetingDate'),
-                    'VOTE DESCRIPTION': _collapse_newlines(get_text(item, 'voteDescription')),
-                    'VOTE CATEGORY': category_text,
-                    'SHARES VOTED': get_text(item, 'sharesVoted'),
-                    'SHARES ON LOAN': get_text(item, 'sharesOnLoan'),
-                    'HOW VOTED': how_voted,
-                    'SHARES VOTED FOR OR AGAINST MANAGEMENT': sv_ford,
-                    'FOR OR AGAINST MANAGEMENT': mgmt_rec,
-                    'OTHER INFO': _collapse_newlines(get_text(item, 'voteOtherInfo'))
-                })
+                managers = "; ".join(
+                    manager.get_text(strip=True)
+                    for manager in item.find_all(re.compile(r'^otherManager$', re.I))
+                )
+                vote_series = "; ".join(
+                    series.get_text(strip=True)
+                    for series in item.find_all(re.compile(r'^voteSeries$', re.I))
+                )
+                records = (
+                    vote_node.find_all(re.compile(r'^voteRecord$', re.I))
+                    if vote_node
+                    else [None]
+                )
+                for record in records or [None]:
+                    vote_records.append({
+                        'NAME OF ISSUER': _collapse_newlines(get_text(item, 'issuerName')),
+                        'CUSIP': get_text(item, 'cusip'),
+                        'ISIN': get_text(item, 'isin'),
+                        'FIGI': get_text(item, 'figi'),
+                        'MEETING DATE': get_text(item, 'meetingDate'),
+                        'VOTE DESCRIPTION': _collapse_newlines(get_text(item, 'voteDescription')),
+                        'VOTE CATEGORY': category_text,
+                        'OTHER VOTE DESCRIPTION': _collapse_newlines(get_text(item, 'otherVoteDescription')),
+                        'VOTE SOURCE': get_text(item, 'voteSource'),
+                        'PROPOSAL SHARES VOTED': get_text(item, 'sharesVoted'),
+                        'SHARES ON LOAN': get_text(item, 'sharesOnLoan'),
+                        'HOW VOTED': get_text(record, 'howVoted'),
+                        'VOTE RECORD SHARES': get_text(record, 'sharesVoted'),
+                        'MANAGEMENT RECOMMENDATION': get_text(record, 'managementRecommendation'),
+                        'OTHER MANAGERS': managers or "—",
+                        'VOTE SERIES': vote_series or "—",
+                        'OTHER INFO': _collapse_newlines(get_text(item, 'voteOtherInfo'))
+                    })
             df = pd.DataFrame(vote_records).replace('—', '')
             parts.append(to_compact_markdown(df, index=False))
 
@@ -3865,6 +4000,7 @@ def parse_form_npx_xml(xml_contents) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form25_xml(xml: BeautifulSoup) -> str:
     """
     Parses the XML of a Form 25 filing into structured Markdown,
@@ -3934,6 +4070,7 @@ def parse_form25_xml(xml: BeautifulSoup) -> str:
 
     return "\n".join(parts)
 
+@preserve_xml_fields
 def parse_form144_xml(xml: BeautifulSoup, form_type: str) -> str:
     """
     Parses XML for Form 144 and 144/A filings into structured Markdown,
@@ -4002,26 +4139,27 @@ def parse_form144_xml(xml: BeautifulSoup, form_type: str) -> str:
         "\n" + textwrap.fill("See the definition of \"person\" in paragraph (a) of Rule 144. Information is to be given not only as to the person for whose account the securities are to be sold but also as to all other persons included in that definition. In addition, information shall be given as to sales by all persons whose sales are required by paragraph (e) of Rule 144 to be aggregated with sales for the account of the person filing this notice.")
     ])
 
-    sec_info = form_data.find(re.compile(r'^(?:\w+:)?securitiesInformation$', re.I))
-    broker = sec_info.find(re.compile(r'^(?:\w+:)?brokerOrMarketmakerDetails$', re.I)) if sec_info else None
-    full_broker_info = get_text(broker, 'name')
-    if broker and (broker_addr_node := broker.find(re.compile(r'^(?:\w+:)?address$', re.I))):
-        addr_lines = [get_text(broker_addr_node, t) for t in ['street1', 'street2']]
-        city_state_zip = " ".join(p for p in [get_text(broker_addr_node, t) for t in ['city', 'stateOrCountry', 'zipCode']] if p and p != "—")
-        if city_state_zip: addr_lines.append(city_state_zip)
-        if valid_lines := [line for line in addr_lines if line and line != "—"]:
-            full_broker_info += "<br>" + "<br>".join(valid_lines)
-    
-    df_proposed_data = {
-        'Title of the Class of Securities To Be Sold': get_text(sec_info, 'securitiesClassTitle'),
-        'Name and Address of the Broker': full_broker_info,
-        'Number of Shares or Other Units To Be Sold': get_text(sec_info, 'noOfUnitsSold'),
-        'Aggregate Market Value': get_text(sec_info, 'aggregateMarketValue'),
-        'Number of Shares or Other Units Outstanding': get_text(sec_info, 'noOfUnitsOutstanding'),
-        'Approximate Date of Sale': get_text(sec_info, 'approxSaleDate'),
-        'Name the Securities Exchange': get_text(sec_info, 'securitiesExchangeName')
-    }
-    df_proposed = pd.DataFrame([df_proposed_data])
+    proposed_sales = []
+    for sec_info in form_data.find_all(re.compile(r'^(?:\w+:)?securitiesInformation$', re.I)):
+        broker = sec_info.find(re.compile(r'^(?:\w+:)?brokerOrMarketmakerDetails$', re.I))
+        full_broker_info = get_text(broker, 'name')
+        if broker and (broker_addr_node := broker.find(re.compile(r'^(?:\w+:)?address$', re.I))):
+            addr_lines = [get_text(broker_addr_node, t) for t in ['street1', 'street2']]
+            city_state_zip = " ".join(p for p in [get_text(broker_addr_node, t) for t in ['city', 'stateOrCountry', 'zipCode']] if p and p != "—")
+            if city_state_zip:
+                addr_lines.append(city_state_zip)
+            if valid_lines := [line for line in addr_lines if line and line != "—"]:
+                full_broker_info += "<br>" + "<br>".join(valid_lines)
+        proposed_sales.append({
+            'Title of the Class of Securities To Be Sold': get_text(sec_info, 'securitiesClassTitle'),
+            'Name and Address of the Broker': full_broker_info,
+            'Number of Shares or Other Units To Be Sold': get_text(sec_info, 'noOfUnitsSold'),
+            'Aggregate Market Value': get_text(sec_info, 'aggregateMarketValue'),
+            'Number of Shares or Other Units Outstanding': get_text(sec_info, 'noOfUnitsOutstanding'),
+            'Approximate Date of Sale': get_text(sec_info, 'approxSaleDate'),
+            'Name the Securities Exchange': get_text(sec_info, 'securitiesExchangeName')
+        })
+    df_proposed = pd.DataFrame(proposed_sales)
 
     parts.extend([f"\n### {form_type}: Securities Information", df_to_markdown(df_proposed, is_clean=True, disable_numparse=True), "\n" + textwrap.fill("Furnish the following information with respect to the acquisition of the securities to be sold and with respect to the payment of all or any part of the purchase price or other consideration therefor:")])
 
@@ -4063,12 +4201,25 @@ def parse_form144_xml(xml: BeautifulSoup, form_type: str) -> str:
     
     signature_node = form_data.find(re.compile(r'^(?:\w+:)?noticeSignature$', re.I))
     plan_adoption_dates_node = signature_node.find(re.compile(r'^(?:\w+:)?planAdoptionDates$', re.I)) if signature_node else None
-    plan_date = get_text(plan_adoption_dates_node, "planAdoptionDate")
+    plan_dates = [
+        node.get_text(strip=True)
+        for node in (
+            plan_adoption_dates_node.find_all(
+                re.compile(r'^(?:\w+:)?planAdoptionDate$', re.I)
+            )
+            if plan_adoption_dates_node
+            else []
+        )
+        if node.get_text(strip=True)
+    ]
 
     parts.append(f"**Date of Notice:** {get_text(signature_node, 'noticeDate')}")
 
-    if plan_date != "—":
-        parts.append(f"**Date of Plan Adoption or Giving of Instruction, If Relying on Rule 10b5-1:** {plan_date}")
+    if plan_dates:
+        parts.append(
+            "**Date(s) of Plan Adoption or Giving of Instruction, If Relying on "
+            f"Rule 10b5-1:** {', '.join(plan_dates)}"
+        )
 
     parts.append("\nATTENTION:\n\n" + textwrap.fill("The person for whose account the securities to which this notice relates are to be sold hereby represents by signing this notice that he does not know any material adverse information in regard to the current and prospective operations of the Issuer of the securities to be sold which has not been publicly disclosed. If such person has adopted a written trading plan or given trading instructions to satisfy Rule 10b5-1 under the Exchange Act, by signing the form and indicating the date that the plan was adopted or the instruction given, that person makes such representation as of the plan adoption or instruction date."))
 

@@ -1,0 +1,194 @@
+{
+  "schema_version": 1,
+  "source_index": "https://www.sec.gov/submit-filings/technical-specifications",
+  "specifications": [
+    {
+      "family": "schedule13d_g",
+      "forms": ["SCHEDULE 13D", "SCHEDULE 13G"],
+      "version": "2.3",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/schedule-13d-13g-tech-specs-23.zip",
+      "sha256": "52d3e2c97749c39002d66c5a5ddad8d5700c112e0097ea058b7ab7658b583c7b"
+    },
+    {
+      "family": "ownership",
+      "forms": ["3", "3/A", "4", "4/A", "5", "5/A"],
+      "version": "5.5",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/ownershipxmltechspec-v5-5.zip",
+      "sha256": "4c1e9fb1f2c4a8a4e3d6c70cb93b6d77130dcf0a9e588841e5797507db33c3e7"
+    },
+    {
+      "family": "x17a5",
+      "forms": ["X-17A-5", "X-17A-5/A"],
+      "version": "10",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-x-17a-5-xml-tech-specs-10.zip",
+      "sha256": "de7515342d36ebfcf7afba22fac85decb8276395fc072d5cf942605d73aceac8"
+    },
+    {
+      "family": "sbs",
+      "forms": ["SBSE-A", "SBSE-A/A"],
+      "version": "1.8",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/sbs-tech-spec-18.zip",
+      "sha256": "9aaf74ab3c277d4726617b534250eaecdc378a09cee0b153078ca19ae46a74d6"
+    },
+    {
+      "family": "form13f",
+      "forms": ["13F-HR", "13F-HR/A", "13F-NT", "13F-NT/A"],
+      "version": "1.9",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/edgar-form-13f-xml-technical-specification-1-9.zip",
+      "sha256": "10a9b891d35f858ccdf23f63e749fa667730dc08910aecc02967d8cf96dcf6e4"
+    },
+    {
+      "family": "edgarlink_online",
+      "forms": ["EFFECT", "QUALIF"],
+      "version": "52",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/edgarlink-online-xml-tech-spec-52.zip",
+      "sha256": "9d7e7b0e5e97a3de72e81ee58291f43e7b2b1189a399b08a46d484163a3aff4e"
+    },
+    {
+      "family": "sbsef",
+      "forms": ["SBSEF", "SBSEF/A", "SBSEF-V", "SBSEF-W"],
+      "version": "1.1",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/sbsef-tech-spec-1.zip",
+      "sha256": "cbf79c1899256144d0fc9d7b585b019ad0cf139f87e711c8ce977f6f5f32570a"
+    },
+    {
+      "family": "abs",
+      "forms": ["ABS-EE", "ABS-EE/A", "EX-102", "EX-103"],
+      "version": "3.1",
+      "url": "https://www.sec.gov/files/absxml-31.zip",
+      "sha256": "0d5dcc22e9e9dba6454133cfacac5c8059b869262312da49af3213f8b159d995"
+    },
+    {
+      "family": "atsn",
+      "forms": [
+        "ATS-N",
+        "ATS-N/A",
+        "ATS-N/CA",
+        "ATS-N/MA",
+        "ATS-N/OFA",
+        "ATS-N/UA",
+        "ATS-N-C",
+        "ATS-N-W"
+      ],
+      "version": "1.5",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-ats-n-xml-15.zip",
+      "sha256": "3d346d85210558ae80d424747691b128fec416b06dcf65a01d756ceaea0e0b44"
+    },
+    {
+      "family": "cfportal",
+      "forms": ["CFPORTAL", "CFPORTAL/A", "CFPORTAL-W"],
+      "version": "1.5",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-cf-portal-xml-tech-specs-15.zip",
+      "sha256": "8ab0394971b30eb100328083613af9197285e99a7ebd535e689479b472cccca9"
+    },
+    {
+      "family": "nmfp1",
+      "forms": ["N-MFP1", "N-MFP1/A"],
+      "version": "1.2",
+      "url": "https://www.sec.gov/info/edgar/specifications/form-n-mfp1-xml-tech-specs-1-2.zip",
+      "sha256": "f3495bb7315e21c47f9eabb88184653be44a8175a540abc2fe79334b03c0beef"
+    },
+    {
+      "family": "formta",
+      "forms": ["TA-1", "TA-1/A", "TA-2", "TA-2/A", "TA-W", "TA-W/A"],
+      "version": "1.6",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-ta-xml-16.zip",
+      "sha256": "f2173ac79856ccddd46e24a43273eedd9d7f64b210c00411f295b1c1a6018e0b"
+    },
+    {
+      "family": "rega",
+      "forms": [
+        "1-A",
+        "1-A/A",
+        "1-A POS",
+        "1-A-W",
+        "1-A-W/A",
+        "1-K",
+        "1-K/A",
+        "1-Z",
+        "1-Z/A",
+        "1-Z-W"
+      ],
+      "version": "1.11",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/edgar-reg-tech-specs-111.zip",
+      "sha256": "8353566b66b566b1c82664df39bd2ff0e9d81343c2a9d3ac4c4d43f6f74a5b6c"
+    },
+    {
+      "family": "form25",
+      "forms": ["25", "25/A", "25-NSE", "25-NSE/A"],
+      "version": "4.3",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-25-nse-xml-43.zip",
+      "sha256": "83dd2c3d6fb238d8525a818a7cd7cf90721e1bbab828045057a4f61c5d3bf87e"
+    },
+    {
+      "family": "nport",
+      "forms": ["NPORT-P", "NPORT-NP"],
+      "version": "1.13",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/edgar-form-n-port-xml-tech-spec-113.zip",
+      "sha256": "373c62a7b96e632296122631ddbf8717817082093d3727dc21afbcb083bb45fb"
+    },
+    {
+      "family": "npx",
+      "forms": ["N-PX", "N-PX/A"],
+      "version": "3.1",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/edgar-form-n-px-xml-technical-specification-31.zip",
+      "sha256": "857b33522d12f6de55c54205250a61203791a77aa17fbf0df5b28fdf20b39492"
+    },
+    {
+      "family": "form24f2",
+      "forms": ["24F-2NT", "24F-2NT/A"],
+      "version": "2.1",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-24f-2-xml-tech-specs-21.zip",
+      "sha256": "65f03a98b50d80690b3128fcc6e262c5e4435e83da5e341e5eaafa84166d5f33"
+    },
+    {
+      "family": "nmfp3",
+      "forms": ["N-MFP3", "N-MFP3/A"],
+      "version": "2.0",
+      "url": "https://www.sec.gov/files/edgar-form-n-mfp3-xml-technical-specification.zip",
+      "sha256": "494bb347680b24f026f13c36d92442c10d0ebd513562a493255751f7df1669d6"
+    },
+    {
+      "family": "ncen",
+      "forms": ["N-CEN", "N-CEN/A"],
+      "version": "3.1",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-n-cen-xml-tech-specs-31.zip",
+      "sha256": "365894708c03f5fab96cd9f0c3c6f55ac687b910bb30ccdba1a2cb6348aa904d"
+    },
+    {
+      "family": "form144",
+      "forms": ["144", "144/A"],
+      "version": "2.0",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form144xmltechspec2-0.zip",
+      "sha256": "a62cad5b4151cde911420d9ce4c55d13883da110a53cb4322ca6f1d7578fda3f"
+    },
+    {
+      "family": "formc",
+      "forms": ["C", "C/A", "C-AR", "C-U", "C-TR", "C-W"],
+      "version": "8",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-c-xml-tech-specs-8.zip",
+      "sha256": "fc3550520a438fcce455f7490b48909aaca5a0e11843745b57b864c21580ff01"
+    },
+    {
+      "family": "formma",
+      "forms": ["MA", "MA-A", "MA/A", "MA-I", "MA-I/A", "MA-W", "MA-W/A"],
+      "version": "1.6",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-ma-xml-16.zip",
+      "sha256": "9193c7a5cb51610d31cdf609fbd5a35b150446344b609302aa7234d996d15e8e"
+    },
+    {
+      "family": "nmfp2",
+      "forms": ["N-MFP2", "N-MFP2/A"],
+      "version": "2.4",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/form-n-mfp2-xml-tech-specs-24.zip",
+      "sha256": "40009337817a3462065ed5fa8170d37614ff425fb4fc5c9772935d6ac45c0977"
+    },
+    {
+      "family": "formd",
+      "forms": ["D", "D/A"],
+      "version": "12",
+      "url": "https://www.sec.gov/files/edgar/filer-information/specifications/formdxmltechspec-81_d.zip",
+      "sha256": "fc1a4c2154843d15c7b0273eeb41dbbc8e5c158492f167a9b4355c1544eb66bc"
+    }
+  ]
+}

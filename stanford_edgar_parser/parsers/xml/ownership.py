@@ -3,6 +3,7 @@ import stanford_edgar_parser._state as _state
 
 from stanford_edgar_parser.multimarkdown.multimarkdown import ORDER_I, ORDER_II, reorder
 from stanford_edgar_parser.parsers.html.table_cleaning import md_table_2row_header
+from stanford_edgar_parser.parsers.xml.preservation import preserve_xml_fields
 from stanford_edgar_parser.utils.bootstrap import BeautifulSoup, pd, re, textwrap
 
 def _unsplit_numbers(text: str) -> str:
@@ -131,6 +132,7 @@ def _dollarize_if_number(val: str) -> str:
 def _is_voluntary(code: str, tl_value: str) -> bool:
     return (code == 'V') or bool(tl_value and tl_value.strip())
 
+@preserve_xml_fields
 def parse_form4_xml(soup, doc_type="4") -> str:
     xml = soup
 
