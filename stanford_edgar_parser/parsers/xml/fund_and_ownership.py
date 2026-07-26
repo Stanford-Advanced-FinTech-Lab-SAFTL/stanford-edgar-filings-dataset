@@ -13,6 +13,7 @@ from stanford_edgar_parser.parsers.xml.ownership import (
     format_footnotes_in_text,
     get_value_with_footnote,
 )
+from stanford_edgar_parser.parsers.xml.preservation import preserve_xml_fields
 from stanford_edgar_parser.utils.bootstrap import (
     BeautifulSoup,
     html,
@@ -35,6 +36,7 @@ def to_compact_markdown(df: pd.DataFrame, **kwargs) -> str:
     return _impl(df, **kwargs)
 
 
+@preserve_xml_fields
 def parse_schedule13g_xml(xml: BeautifulSoup) -> str:
     """
     Parses a Schedule 13G filing into structured Markdown, creating a
@@ -325,6 +327,7 @@ def _form3_header_details_block(xml: BeautifulSoup, owner_node, footnotes_map: d
 
     return f"\n\n---\n{header}\n{row1}\n{row2}\n\n---\n"
 
+@preserve_xml_fields
 def parse_form3_xml(soup: BeautifulSoup) -> str:
     """
     Parses an XML-based Form 3 (Initial Statement of Beneficial Ownership)
@@ -441,6 +444,7 @@ def parse_form3_xml(soup: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_d_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form D into structured Markdown, accurately
@@ -935,6 +939,7 @@ def parse_form_d_xml(xml: BeautifulSoup) -> str:
     
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_n_mfp2_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
     """
     Parses an XML-based Form N-MFP2 (Monthly Schedule of Portfolio Holdings
@@ -1342,6 +1347,7 @@ def parse_form497_sgml(header_content: str) -> str:
         
     return final_md
 
+@preserve_xml_fields
 def parse_form_n_cen_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form N-CEN into a structured Markdown document.
@@ -2179,6 +2185,7 @@ def parse_form_n_cen_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form_c_xml(xml: BeautifulSoup) -> str:
     """
     Parses an XML-based Form C into structured Markdown, accurately
@@ -2322,6 +2329,7 @@ def parse_form_c_xml(xml: BeautifulSoup) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
     """
     Parses an XML-based Form NPORT-P into a structured Markdown document,
@@ -2333,6 +2341,33 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
         if not node: return "—"
         found = node.find(re.compile(rf'(?:\w+:)?{tag}$', re.I))
         return found.text.strip() if found and found.text else "—"
+
+    def get_text_or_value(node, tag):
+        if not node:
+            return "—"
+        found = node.find(re.compile(rf'(?:\w+:)?{tag}$', re.I))
+        if not found:
+            return "—"
+        if found.text and found.text.strip():
+            return found.text.strip()
+        return found.get("value", "—")
+
+    def collect_field_values(node, tag):
+        if not node:
+            return []
+        wanted = tag.casefold()
+        values = []
+        for found in [node, *node.find_all()]:
+            if str(found.name).split(":")[-1].casefold() == wanted:
+                if found.text and found.text.strip():
+                    values.append(found.text.strip())
+                for attr_name in ("value", "amt"):
+                    if found.get(attr_name):
+                        values.append(str(found[attr_name]).strip())
+            for attr_name, attr_value in found.attrs.items():
+                if str(attr_name).split(":")[-1].casefold() == wanted:
+                    values.append(str(attr_value).strip())
+        return list(dict.fromkeys(value for value in values if value))
 
     def format_val(value_str: str, type_hint: str = 'string') -> str:
         if not value_str or value_str.lower() in ('—', 'n/a', 'na'): return "—"
@@ -2354,11 +2389,14 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
     if class_name_map is None:
         class_name_map = {}
 
-    parts = ["## Form NPORT-P: Monthly Portfolio Investments Report"]
+    submission_type = get_text(xml, 'submissionType')
+    if submission_type == "—":
+        submission_type = "NPORT-P"
+    parts = [f"## Form {submission_type}: Monthly Portfolio Investments Report"]
 
     gen_info = xml.find('genInfo')
     if gen_info:
-        parts.append("\n### NPORT-P: Part A: General Information")
+        parts.append(f"\n### {submission_type}: Part A: General Information")
         
         parts.append("\n**Item A.1. Information about the Registrant.**")
         registrant_info = {
@@ -2421,14 +2459,34 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
             if val and val != "—" and val != "$0.00":
                 parts.append(f"**{key}:** {val}")
         
-        if (cur_metric := fund_info.find('curMetric')):
-            parts.append("\n**Currency Risk Metrics (dv01):**")
-            risk_data = {
-                "3-Month": cur_metric.get('period3Mon'), "1-Year": cur_metric.get('period1Yr'),
-                "5-Year": cur_metric.get('period5Yr'), "10-Year": cur_metric.get('period10Yr'),
-                "30-Year": cur_metric.get('period30Yr')
-            }
-            parts.append("- " + " | ".join([f"**{k}:** {v}" for k, v in risk_data.items() if v]))
+        currency_risk_rows = []
+        for cur_metric in fund_info.find_all('curMetric'):
+            currency = get_text(cur_metric, 'curCd')
+            for metric_tag, metric_label in (
+                ('intrstRtRiskdv01', 'DV01'),
+                ('intrstRtRiskdv100', 'DV100'),
+            ):
+                metric = cur_metric.find(metric_tag)
+                if not metric:
+                    continue
+                currency_risk_rows.append({
+                    "Currency": currency,
+                    "Metric": metric_label,
+                    "3-Month": metric.get('period3Mon', '—'),
+                    "1-Year": metric.get('period1Yr', '—'),
+                    "5-Year": metric.get('period5Yr', '—'),
+                    "10-Year": metric.get('period10Yr', '—'),
+                    "30-Year": metric.get('period30Yr', '—'),
+                })
+        if currency_risk_rows:
+            parts.append("\n**Currency Interest-Rate Risk Metrics:**")
+            parts.append(
+                df_to_markdown(
+                    pd.DataFrame(currency_risk_rows),
+                    is_clean=True,
+                    disable_numparse=True,
+                )
+            )
 
         if (invst_grade := fund_info.find('creditSprdRiskInvstGrade')):
             parts.append("\n**Credit Spread Risk - Investment Grade (dv01):**")
@@ -2481,7 +2539,7 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
 
     class_level_nodes = xml.find_all('classLevelInfo')
     if class_level_nodes:
-        parts.append("\n### NPORT-P: Part B: Information About the Series")
+        parts.append(f"\n### {submission_type}: Part B: Information About the Series")
         for node in class_level_nodes:
             class_id = get_text(node, 'classId')
             class_name = class_name_map.get(class_id, f"Class ID {class_id}")
@@ -2537,6 +2595,7 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
     if investments:
         parts.append("\n### Schedule of Portfolio Investments")
         investment_data = []
+        derivative_data = []
         for item in investments:
             ids = []
             if (cusip := get_text(item, 'cusip')) != "—": ids.append(f"CUSIP: {cusip}")
@@ -2544,8 +2603,8 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
             
             id_node = item.find('identifiers')
             if id_node:
-                if (isin := get_text(id_node, 'isin')) != "—": ids.append(f"ISIN: {isin}")
-                if (ticker := get_text(id_node, 'ticker')) != "—": ids.append(f"Ticker: {ticker}")
+                if (isin := get_text_or_value(id_node, 'isin')) != "—": ids.append(f"ISIN: {isin}")
+                if (ticker := get_text_or_value(id_node, 'ticker')) != "—": ids.append(f"Ticker: {ticker}")
             id_str = "<br>".join(ids) if ids else "—"
 
             lending_info = "—"
@@ -2560,36 +2619,75 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
                 coupon_kind = get_text(debt_sec, 'couponKind')
                 annualized_rt = format_val(get_text(debt_sec, 'annualizedRt'), 'percent')
 
+            derivative_details = []
+            derivative_info = item.find('derivativeInfo')
+            if derivative_info:
+                derivative_fields = (
+                    ("derivCat", "Category"),
+                    ("counterpartyName", "Counterparty"),
+                    ("counterpartyLei", "Counterparty LEI"),
+                    ("payOffProf", "Payoff"),
+                    ("putOrCall", "Put/Call"),
+                    ("writtenOrPur", "Written/Purchased"),
+                    ("indexName", "Index"),
+                    ("indexIdentifier", "Index ID"),
+                    ("terminationDt", "Termination"),
+                    ("expDate", "Expiration"),
+                    ("expDt", "Expiration"),
+                    ("notionalAmt", "Notional"),
+                    ("curCd", "Currency"),
+                    ("exercisePrice", "Exercise Price"),
+                    ("exercisePriceCurCd", "Exercise Currency"),
+                    ("unrealizedAppr", "Unrealized Appreciation"),
+                )
+                for tag, label in derivative_fields:
+                    values = collect_field_values(derivative_info, tag)
+                    if values:
+                        derivative_details.append(f"{label}: {', '.join(values)}")
+                if derivative_details:
+                    derivative_data.append({
+                        "Investment": get_text(item, 'name'),
+                        "CUSIP": get_text(item, 'cusip'),
+                        "Derivative Details": "<br>".join(derivative_details),
+                    })
+
             record = {
-                "Name": get_text(item, 'name'),
-                "Title": get_text(item, 'title'),
+                "Investment": (
+                    f"{get_text(item, 'name')}<br>"
+                    f"Title: {get_text(item, 'title')}"
+                ),
                 "Identifiers": id_str,
-                "Payoff Profile": get_text(item, 'payoffProfile'),
-                "Asset Category": get_text(item, 'assetCat'),
-                "Issuer Category": get_text(item, 'issuerCat'),
-                "Country": get_text(item, 'invCountry'),
-                "Balance": format_val(get_text(item, 'balance'), 'number'),
-                "Units": get_text(item, 'units'),
-                "Value (USD)": format_val(get_text(item, 'valUSD'), 'dollar'),
-                "% of Net Assets": format_val(get_text(item, 'pctVal'), 'percent'),
-                "Maturity Date": maturity_dt,
-                "Coupon Type": coupon_kind,
-                "Annualized Rate (%)": annualized_rt,
-                "Restricted?": format_val(get_text(item, 'isRestrictedSec')),
-                "Fair Value Level": get_text(item, 'fairValLevel'),
-                "Lending Status": lending_info,
+                "Position": (
+                    f"Balance: {format_val(get_text(item, 'balance'), 'number')} "
+                    f"{get_text(item, 'units')}<br>"
+                    f"Value (USD): {format_val(get_text(item, 'valUSD'), 'dollar')}<br>"
+                    f"% of Net Assets: {format_val(get_text(item, 'pctVal'), 'percent')}"
+                ),
+                "Classification and Terms": "<br>".join((
+                    f"Country: {get_text(item, 'invCountry')}",
+                    f"Payoff Profile: {get_text(item, 'payoffProfile')}",
+                    f"Asset Category: {get_text(item, 'assetCat')}",
+                    f"Issuer Category: {get_text(item, 'issuerCat')}",
+                    f"Maturity Date: {maturity_dt}",
+                    f"Coupon Type: {coupon_kind}",
+                    f"Annualized Rate: {annualized_rt}",
+                    f"Restricted: {format_val(get_text(item, 'isRestrictedSec'))}",
+                    f"Fair Value Level: {get_text(item, 'fairValLevel')}",
+                    f"Lending Status: {lending_info}",
+                )),
             }
             investment_data.append(record)
         
         df = pd.DataFrame(investment_data)
         if not df.empty:
             column_order = [
-                "Name", "Title", "Identifiers", "Payoff Profile", "Asset Category", "Issuer Category", "Country", 
-                "Balance", "Units", "Value (USD)", "% of Net Assets", "Maturity Date", "Coupon Type",
-                "Annualized Rate (%)", "Restricted?", "Fair Value Level", "Lending Status"
+                "Investment", "Identifiers", "Position", "Classification and Terms"
             ]
             df = df.reindex(columns=column_order, fill_value="—").fillna("—")
             parts.append(to_compact_markdown(df, index=False))
+        if derivative_data:
+            parts.append("\n### Derivative Details")
+            parts.append(to_compact_markdown(pd.DataFrame(derivative_data), index=False))
             
     signature_node = xml.find('signature')
     if signature_node:
@@ -2607,6 +2705,7 @@ def parse_nport_p_xml(xml: BeautifulSoup, class_name_map: dict = None) -> str:
 
     return "\n\n".join(parts)
 
+@preserve_xml_fields
 def parse_form1a_xml(xml: BeautifulSoup) -> str:
     """
     Parses the XML of a Form 1-A filing into a structured and comprehensive
